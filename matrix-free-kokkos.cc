@@ -525,6 +525,7 @@ run(const unsigned int n_refinements, ConvergenceTable &table)
 
   if (!use_multigrid)
     {
+      TimerOutput::Scope t(computing_timer, "solve");
       DiagonalMatrix<VectorType> preconditioner;
       laplace_operator.compute_inverse_diagonal(preconditioner.get_vector());
 
@@ -532,6 +533,7 @@ run(const unsigned int n_refinements, ConvergenceTable &table)
     }
   else
     {
+      TimerOutput::Scope t(computing_timer, "solve");
       using LevelMatrixType =
         LaplaceOperator<dim, degree, n_components, Number, MemorySpace>;
       using SmootherPreconditionerType = DiagonalMatrix<VectorType>;
@@ -633,11 +635,9 @@ run(const unsigned int n_refinements, ConvergenceTable &table)
 
       // solve
       solver.solve(laplace_operator, dst, src, preconditioner);
-
-      computing_timer.print_summary();
-      computing_timer.reset();
     }
-
+    computing_timer.print_summary();
+    computing_timer.reset();
   {
     VectorTypeHost dst_host(dst.get_partitioner());
 
