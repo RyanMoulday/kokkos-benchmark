@@ -437,12 +437,7 @@ public:
   virtual T
   value(const Point<dim, T> &p, const unsigned int component = 0) const override
   {
-    double temp = 0.0;
-
-    for (unsigned int d = 0; d < dim; ++d)
-      temp += std::sin(p[d]);
-
-    return temp * (1.0 + component);
+    return 1;
   }
 };
 

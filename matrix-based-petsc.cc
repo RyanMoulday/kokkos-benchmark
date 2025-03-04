@@ -203,13 +203,6 @@
   
            for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
              {
-               const double rhs_value =
-                 (fe_values.quadrature_point(q_point)[1] >
-                      0.5 +
-                        0.25 * std::sin(4.0 * numbers::PI *
-                                        fe_values.quadrature_point(q_point)[0]) ?
-                    1. :
-                    -1.);
   
                for (unsigned int i = 0; i < dofs_per_cell; ++i)
                  {
@@ -218,7 +211,7 @@
                                           fe_values.shape_grad(j, q_point) *
                                           fe_values.JxW(q_point);
   
-                   cell_rhs(i) += rhs_value *                         
+                   cell_rhs(i) += 1 *                         
                                   fe_values.shape_value(i, q_point) * 
                                   fe_values.JxW(q_point);
                  }
