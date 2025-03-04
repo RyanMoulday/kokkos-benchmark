@@ -515,7 +515,8 @@ run(const unsigned int n_refinements, ConvergenceTable &table)
     dst = 0.0;
   }
 
-  ReductionControl     solver_control;
+  SolverControl solver_control(dof_handler.n_dofs(),
+                                  1e-6 * src.l2_norm());
   SolverCG<VectorType> solver(solver_control);
 
   if (!use_multigrid)
@@ -601,7 +602,7 @@ run(const unsigned int n_refinements, ConvergenceTable &table)
           mg_matrices[level].compute_inverse_diagonal(
             smoother_data[level].preconditioner->get_vector());
           smoother_data[level].smoothing_range     = 20;
-          smoother_data[level].degree              = 5;
+          smoother_data[level].degree              = 2;
           smoother_data[level].eig_cg_n_iterations = 20;
           smoother_data[level].constraints.copy_from(mg_constraints[level]);
         }
