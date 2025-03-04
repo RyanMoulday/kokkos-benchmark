@@ -685,6 +685,10 @@ main(int argc, char **argv)
   const unsigned int fe_degree     = 2;
   unsigned int       n_refinements = 6;
 
+  if (argc > 1) {
+    n_refinements = std::stoi(argv[1]);
+  }
+
   ConvergenceTable table;
 
   std::cout << "Running on the GPU..." << std::endl;

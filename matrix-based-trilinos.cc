@@ -75,7 +75,7 @@
    public:
      LaplaceProblem();
   
-     void run();
+     void run(const unsigned int n_refinements);
   
    private:
      void setup_system();
@@ -323,7 +323,7 @@
   
   
    template <int dim>
-   void LaplaceProblem<dim>::run()
+   void LaplaceProblem<dim>::run(const unsigned int n_refinements)
    {
      pcout << "Running with "
  #ifdef USE_PETSC_LA
@@ -337,12 +337,12 @@
      const unsigned int n_cycles = 1;
      for (unsigned int cycle = 0; cycle < n_cycles; ++cycle)
        {
-         pcout << "Cycle " << cycle << ':' << std::endl;
+         //pcout << "Cycle " << cycle << ':' << std::endl;
   
          if (cycle == 0)
            {
              GridGenerator::hyper_cube(triangulation);
-             triangulation.refine_global(6);
+             triangulation.refine_global(n_refinements);
            }
          else
            refine_grid();
@@ -371,9 +371,15 @@
        using namespace Step40;
   
        Utilities::MPI::MPI_InitFinalize mpi_initialization(argc, argv, 1);
+
+       unsigned int       n_refinements = 6;
+
+       if (argc > 1) {
+        n_refinements = std::stoi(argv[1]);
+      }
   
        LaplaceProblem<3> laplace_problem_3d;
-       laplace_problem_3d.run();
+       laplace_problem_3d.run(n_refinements);
      }
    catch (std::exception &exc)
      {
