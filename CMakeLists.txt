@@ -16,6 +16,9 @@ project(matrix-compare)
 add_executable(matrix-free-kokkos matrix-free-kokkos.cc)
 deal_ii_setup_target(matrix-free-kokkos)
 
+add_executable(matrix-free-cpu matrix-free-cpu.cc)
+deal_ii_setup_target(matrix-free-cpu)
+
 add_executable(matrix-based-petsc matrix-based-petsc.cc)
 deal_ii_setup_target(matrix-based-petsc)
 
