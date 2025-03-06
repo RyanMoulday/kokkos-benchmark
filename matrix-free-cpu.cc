@@ -1162,6 +1162,8 @@ int main(int argc, char *argv[])
       using namespace Step37;
 
       Utilities::MPI::MPI_InitFinalize mpi_init(argc, argv, 1);
+      if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+        std::cout << "Running matrix-free on the CPU" << std::endl;
 
       unsigned int       n_refinements = 6;
 
@@ -1170,7 +1172,10 @@ int main(int argc, char *argv[])
      }
 
       LaplaceProblem<dimension> laplace_problem;
+      Timer time;
       laplace_problem.run(n_refinements);
+      if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+        std::cout << "Total walltime taken: " << time.wall_time() << "s" << std::endl;
     }
   catch (std::exception &exc)
     {
