@@ -1047,7 +1047,7 @@ namespace Step37
     // times for the setup operations are only printed in case the flag for
     // detail_times in the constructor is changed.
 
-    SolverControl solver_control(100, 1e-12 * system_rhs.l2_norm());
+    SolverControl solver_control(100, 1e-6 * system_rhs.l2_norm());
     SolverCG<LinearAlgebra::distributed::Vector<double>> cg(solver_control);
     setup_time += time.wall_time();
     time_details << "MG build smoother time     (CPU/wall) " << time.cpu_time()

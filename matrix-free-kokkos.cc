@@ -521,15 +521,14 @@ run(const unsigned int n_refinements, ConvergenceTable &table)
 
   if (!use_multigrid)
     {
-      TimerOutput::Scope t(computing_timer, "solve");
       DiagonalMatrix<VectorType> preconditioner;
       laplace_operator.compute_inverse_diagonal(preconditioner.get_vector());
 
+      TimerOutput::Scope t(computing_timer, "solve");
       solver.solve(laplace_operator, dst, src, preconditioner);
     }
   else
     {
-      TimerOutput::Scope t(computing_timer, "solve");
       using LevelMatrixType =
         LaplaceOperator<dim, degree, n_components, Number, MemorySpace>;
       using SmootherPreconditionerType = DiagonalMatrix<VectorType>;
@@ -601,9 +600,18 @@ run(const unsigned int n_refinements, ConvergenceTable &table)
             std::make_shared<SmootherPreconditionerType>();
           mg_matrices[level].compute_inverse_diagonal(
             smoother_data[level].preconditioner->get_vector());
-          smoother_data[level].smoothing_range     = 20;
-          smoother_data[level].degree              = 2;
-          smoother_data[level].eig_cg_n_iterations = 20;
+            if (level > 0)
+            {
+              smoother_data[level].smoothing_range     = 15.;
+              smoother_data[level].degree              = 5;
+              smoother_data[level].eig_cg_n_iterations = 10;
+            }
+          else
+            {
+              smoother_data[0].smoothing_range = 1e-3;
+              smoother_data[0].degree          = numbers::invalid_unsigned_int;
+              smoother_data[0].eig_cg_n_iterations = mg_matrices[0].m();
+            }
           smoother_data[level].constraints.copy_from(mg_constraints[level]);
         }
 
@@ -630,6 +638,7 @@ run(const unsigned int n_refinements, ConvergenceTable &table)
         dof_handler, mg, mg_transfer);
 
       // solve
+      TimerOutput::Scope t(computing_timer, "solve");
       solver.solve(laplace_operator, dst, src, preconditioner);
     }
     computing_timer.print_summary();
@@ -655,7 +664,7 @@ run(const unsigned int n_refinements, ConvergenceTable &table)
     data_out.build_patches(mapping,
                            degree + 1,
                            DataOut<dim>::CurvedCellRegion::curved_inner_cells);
-    data_out.write_vtu_in_parallel(file_name, MPI_COMM_WORLD);
+    //data_out.write_vtu_in_parallel(file_name, MPI_COMM_WORLD);
   }
 
   table.add_value("fe_degree", degree);

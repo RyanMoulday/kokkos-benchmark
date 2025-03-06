@@ -238,8 +238,6 @@
    template <int dim>
    void LaplaceProblem<dim>::solve()
    {
-     TimerOutput::Scope t(computing_timer, "solve");
-  
      LA::MPI::Vector completely_distributed_solution(locally_owned_dofs,
                                                      mpi_communicator);
   
@@ -255,7 +253,11 @@
      /* Trilinos defaults are good */
  #endif
      LA::MPI::PreconditionAMG preconditioner;
+     TimerOutput::Scope t(computing_timer, "precondition");
      preconditioner.initialize(system_matrix, data);
+     t.stop();
+  
+     TimerOutput::Scope p(computing_timer, "solve");
   
      solver.solve(system_matrix,
                   completely_distributed_solution,
